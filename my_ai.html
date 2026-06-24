@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peter's Live AI Assistant</title>
+    <!-- Puter.js Library: Connects our browser directly to Google Gemini for free -->
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        body {
+            background-color: #0d0e15;
+            color: #f4f4f5;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            width: 480px;
+            height: 600px;
+            background-color: #161722;
+            border: 1px solid #2e3047;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .chat-header {
+            background-color: #1f2033;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: 1px solid #2e3047;
+            color: #a78bfa;
+        }
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        .user-msg {
+            background-color: #8b5cf6;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .ai-msg {
+            background-color: #2e3047;
+            color: #e4e4e7;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background-color: #1f2033;
+            gap: 10px;
+            border-top: 1px solid #2e3047;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            background-color: #0d0e15;
+            border: 1px solid #2e3047;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+        button {
+            padding: 12px 18px;
+            background-color: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #7c3aed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">GEMINI LIVE CORE v1.0</div>
+        <div class="chat-box" id="chatBox">
+            <div class="message ai-msg">Hello Peter! I am now connected directly to a live language model. Ask me complex questions, conversational queries, or math tasks like "456 * 22"!</div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask Gemini anything..." autocomplete="off">
+            <button onclick="sendChatMessage()">SEND</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById("chatBox");
+        const userInput = document.getElementById("userInput");
+
+        userInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") sendChatMessage();
+        });
+
+        async function sendChatMessage() {
+            const text = userInput.value.trim();
+            if (text === "") return;
+
+            // 1. Render User Message bubble
+            appendMessage(text, "user-msg");
+            userInput.value = "";
+
+            // 2. Render Temporary Thinking state bubble
+            const aiBubble = appendMessage("Accessing Gemini channels...", "ai-msg");
+
+            try {
+                // 3. Connect to the Puter cloud bridge using the Gemini-3.5-Flash brain framework
+                const response = await puter.chat(text, { model: 'gemini-3.5-flash' });
+                
+                // 4. Update the bubble with the true intelligent answer string
+                aiBubble.innerText = response.toString().trim();
+
+            } catch (error) {
+                console.error(error);
+                aiBubble.innerText = "Error: Connection pipeline blocked. Check your laptop's Wi-Fi connection!";
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function appendMessage(text, className) {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${className}`;
+            msgDiv.innerText = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return msgDiv;
+        }
+    </script>
+</body>
+</html>
+
